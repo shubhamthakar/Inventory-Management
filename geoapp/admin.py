@@ -1,5 +1,7 @@
-from django.contrib import admin
+from django.contrib.gis import admin
 from .models import *
 
-admin.site.register(Bank)
+admin.site.register(Shop)
+
+admin.site.register(WorldBorder, admin.GeoModelAdmin)
 # Register your models here.
