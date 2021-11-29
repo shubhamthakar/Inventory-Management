@@ -1,0 +1,101 @@
+{% load leaflet_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Warehouse</title>
+    {% leaflet_js %} 
+    {% leaflet_css %}
+    <!-- <script>
+        var x = document.getElementById("demo");
+        function getLocation() {
+            console.log("Called");
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            x.innerHTML = "Latitude: " + position.coords.latitude +
+                "<br>Longitude: " + position.coords.longitude;
+        }
+    </script> -->
+</head>
+
+<body>
+    <div id="demoMap" style="width:100%;height:600px;"></div>
+</body>
+<script>
+    // var lat = navigator.geolocation.getCurrentPosition.coords.latitude;
+    // var lon = navigator.geolocation.getCurrentPosition.coords.longitude;
+    // console.log(lat);
+    // console.log(lon);
+    // var lat;
+    // var lon;
+    navigator.geolocation.getCurrentPosition(function(position) {
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+    var map = L.map('demoMap',{
+        center:[lat, lon],
+        zoom:15,
+    });
+    var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19,attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+    L.marker([lat,lon]).addTo(map);
+    console.log(lat);
+    console.log(lon);
+    osm.addTo(map);
+    }, 
+    function(position) {
+    window.alert("Error Code"+position.code);
+    var map = L.map('demoMap',{
+        center:[19.0760, 72.8777],
+        zoom:15,
+    });
+    var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19,attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+
+    osm.addTo(map);
+    });
+    // console.log(lat);
+    // console.log(lon);
+    // console.log(navigator.geolocation.getCurrentPosition.coords);
+    
+</script>
+
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html>
+<body>
+
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+}
+</script>
+
+</body>
+</html> -->
+

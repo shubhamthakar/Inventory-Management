@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'geoapp'
+    'geoapp',
+    'leaflet'
 ]
 
 MIDDLEWARE = [
@@ -87,10 +88,10 @@ WSGI_APPLICATION = 'bookwarehouse.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'spatialdb',
+        'NAME': 'postgres',
         'USER': 'postgres',
         'HOST': 'localhost',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'root',
         'PORT': '5432'
 
     }
