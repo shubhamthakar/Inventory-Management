@@ -5,9 +5,11 @@ from channels.layers import get_channel_layer
 from django.core.serializers import serialize
 from asgiref.sync import async_to_sync
 from .models import *
+# https://www.youtube.com/watch?v=r6oTcAYDRt0
+# https://youtu.be/FKYZqAVyY8A
 # Create your views here.
-def testPage(request):
-    return render(request, 'geoapp/index.html', {})
+# def testPage(request):
+#     return render(request, 'geoapp/index.html', {})
 
 def index(request):
     channel_layer = get_channel_layer()
@@ -23,4 +25,4 @@ def index(request):
 
         }
     )
-    return render(request,'index.html')
+    return render(request,'geoapp/index.html')
