@@ -53,17 +53,20 @@
     var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
     for(let i of features)
     {
-        // console.log(L.marker(i["geometry"]['coordinates']).addTo(map));
         let lon = i["geometry"]['coordinates'][0];
         let lat = i["geometry"]['coordinates'][1];
-        // console.log(typeof(lat))
         console.log(lat);
         console.log(lon);
         let title = i['properties']['name'];
-        // console.log(typeof(lat));
         let marker = L.marker([lat, lon],{icon:leaficon, title: title})
         marker.addTo(map);
-        marker.bindPopup("<button onclick='testfunc()'>Book</button>");
+        // console.log();
+        slots_rem = i['properties']['availableSlots'];
+        var pk = i['properties']['pk'];
+        // console.log(typeof(pk));
+        var popup_content = "<p>Slots Remaining:"+slots_rem.toString()+"</p><button onclick='testfunc("+"\""+pk+"\""+")'>Book</button>";
+        console.log(popup_content);
+        marker.bindPopup(popup_content);
         // L.marker([lat, lon]).addTo(map);
     }
     // var incidences = L.geoJson(null, {
@@ -90,11 +93,9 @@
 
         osm.addTo(map);
     });
-    // console.log(lat);
-    // console.log(lon);
-    // console.log(navigator.geolocation.getCurrentPosition.coords);
-    function testfunc(){
+    function testfunc(primary_key){
         console.log("Book button pressed");
+        console.log(primary_key);
     }
 </script>
 
