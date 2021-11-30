@@ -24,7 +24,7 @@ class BookedSlots(models.Model):
     bookingFees = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return self.bookingId
+        return str(self.bookingId)
 
 
 class Shop(models.Model):
