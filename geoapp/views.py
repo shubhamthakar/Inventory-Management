@@ -5,6 +5,8 @@ from channels.layers import get_channel_layer
 from django.core.serializers import serialize
 from asgiref.sync import async_to_sync
 from .models import *
+import json
+import re
 # https://www.youtube.com/watch?v=r6oTcAYDRt0
 # https://youtu.be/FKYZqAVyY8A
 # Create your views here.
@@ -15,7 +17,7 @@ def index(request):
     channel_layer = get_channel_layer()
     data = Warehouse.objects.all()
     data = serialize('geojson', data, geometry_field='location')
-    print(data)
+    # print(data)
     async_to_sync(channel_layer.group_send)(
 
         'mapConsumers' , {
@@ -25,4 +27,5 @@ def index(request):
 
         }
     )
-    return render(request,'geoapp/index.html')
+    cont = {'data':data}
+    return render(request,'geoapp/index.html', cont)
