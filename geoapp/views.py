@@ -7,7 +7,8 @@ from django.views import View
 from .forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
+import json
+import re
 # https://www.youtube.com/watch?v=r6oTcAYDRt0
 # https://youtu.be/FKYZqAVyY8A
 # Create your views here.
@@ -18,7 +19,7 @@ def index(request):
     channel_layer = get_channel_layer()
     data = Warehouse.objects.all()
     data = serialize('geojson', data, geometry_field='location')
-    print(data)
+    # print(data)
     async_to_sync(channel_layer.group_send)(
 
         'mapConsumers' , {
@@ -28,7 +29,8 @@ def index(request):
 
         }
     )
-    return render(request,'geoapp/index.html')
+    cont = {'data':data}
+    return render(request,'geoapp/index.html', cont)
 
 
 
@@ -83,3 +85,5 @@ class SignOutView(View):
     def get(self,request):
         logout(request)
         return redirect('SignInView')
+    
+    

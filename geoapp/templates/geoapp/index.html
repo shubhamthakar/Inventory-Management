@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Warehouse</title>
-    {% leaflet_js %} 
+    {% leaflet_js %}
     {% leaflet_css %}
     <!-- <script>
         var x = document.getElementById("demo");
@@ -37,33 +37,65 @@
     // console.log(lon);
     // var lat;
     // var lon;
-    navigator.geolocation.getCurrentPosition(function(position) {
-    let lat = position.coords.latitude;
-    let lon = position.coords.longitude;
-    var map = L.map('demoMap',{
-        center:[lat, lon],
-        zoom:15,
-    });
-    var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19,attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
-    L.marker([lat,lon]).addTo(map);
-    console.log(lat);
-    console.log(lon);
+    navigator.geolocation.getCurrentPosition(function (position) {
+        let lat = position.coords.latitude;
+        let lon = position.coords.longitude;
+        var map = L.map('demoMap', {
+            center: [lat, lon],
+            zoom: 15,
+        });
+        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+        L.marker([lat, lon]).addTo(map);
+        var data = {{ data | safe }};
+    var features = data['features'];
+    console.log(features);
+    // }};
+    var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
+    for(let i of features)
+    {
+        // console.log(L.marker(i["geometry"]['coordinates']).addTo(map));
+        let lon = i["geometry"]['coordinates'][0];
+        let lat = i["geometry"]['coordinates'][1];
+        // console.log(typeof(lat))
+        console.log(lat);
+        console.log(lon);
+        let title = i['properties']['name'];
+        // console.log(typeof(lat));
+        let marker = L.marker([lat, lon],{icon:leaficon, title: title})
+        marker.addTo(map);
+        marker.bindPopup("<button onclick='testfunc()'>Book</button>");
+        // L.marker([lat, lon]).addTo(map);
+    }
+    // var incidences = L.geoJson(null, {
+    //     pointToLayer: function (feature, latlng) {
+    //         return L.marker(latlng, {
+    //             icon: L.icon({ iconUrl: "static/img/red.png", 
+    //                             iconSize: [28, 32], 
+    //                             iconAnchor: [12, 28], 
+    //                             popupAnchor: [0, -25] }), 
+    //                             title: feature.properties.title,
+    //                             riseOnHover: true });
+    //     },
+    // }).addTo(map); 
+    // var incidencesUrl = 'incidences'; $.getJSON(incidencesUrl, function (data) { incidences.addData(data); });
     osm.addTo(map);
-    }, 
-    function(position) {
-    window.alert("Error Code"+position.code);
-    var map = L.map('demoMap',{
-        center:[19.0760, 72.8777],
-        zoom:15,
-    });
-    var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19,attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+    },
+    function (position) {
+        window.alert("Error Code" + position.code);
+        var map = L.map('demoMap', {
+            center: [19.0760, 72.8777],
+            zoom: 15,
+        });
+        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
 
-    osm.addTo(map);
+        osm.addTo(map);
     });
     // console.log(lat);
     // console.log(lon);
     // console.log(navigator.geolocation.getCurrentPosition.coords);
-    
+    function testfunc(){
+        console.log("Book button pressed");
+    }
 </script>
 
 </html>
@@ -98,4 +130,3 @@ function showPosition(position) {
 
 </body>
 </html> -->
-
