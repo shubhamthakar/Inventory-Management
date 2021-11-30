@@ -29,7 +29,7 @@ def index(request):
 
         }
     )
-    cont = {'data':data}
+    cont = {'data':data,'username':request.user.username}
     return render(request,'geoapp/index.html', cont)
 
 

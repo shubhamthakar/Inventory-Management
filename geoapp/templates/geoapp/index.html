@@ -35,69 +35,192 @@
     // var lon = navigator.geolocation.getCurrentPosition.coords.longitude;
     // console.log(lat);
     // console.log(lon);
-    // var lat;
-    // var lon;
+    var lat;
+    var lon;
+    var map;
+    var markers = new Array();
+    let socket = new WebSocket("ws://localhost:8000/ws/tableData/");
     navigator.geolocation.getCurrentPosition(function (position) {
-        let lat = position.coords.latitude;
-        let lon = position.coords.longitude;
-        var map = L.map('demoMap', {
+        lat = position.coords.latitude;
+        lon = position.coords.longitude;
+        map = L.map('demoMap', {
             center: [lat, lon],
             zoom: 15,
         });
         var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
         L.marker([lat, lon]).addTo(map);
-        var data = {{ data | safe }};
-    var features = data['features'];
+        addMapIcons(map, osm);
+        // var incidences = L.geoJson(null, {
+        //     pointToLayer: function (feature, latlng) {
+        //         return L.marker(latlng, {
+        //             icon: L.icon({ iconUrl: "static/img/red.png", 
+        //                             iconSize: [28, 32], 
+        //                             iconAnchor: [12, 28], 
+        //                             popupAnchor: [0, -25] }), 
+        //                             title: feature.properties.title,
+        //                             riseOnHover: true });
+        //     },
+        // }).addTo(map); 
+        // var incidencesUrl = 'incidences'; $.getJSON(incidencesUrl, function (data) { incidences.addData(data); });
+    },
+        function (position) {
+            window.alert("Error Code" + position.code);
+            var map = L.map('demoMap', {
+                center: [19.0760, 72.8777],
+                zoom: 15,
+            });
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+
+            osm.addTo(map);
+        });
+    function makebooking(primary_key) {
+        // obj1 = {
+        //     'id':primary_key,
+        //     'no_of_slots':'1',
+        //     'username':'{{username | safe}}'
+        // }
+        var data = primary_key + " " + "1 " + '{{username | safe}}'
+        socket.send(data);
+        // console.log(data);
+    }
+
+    function addMapIcons(map, osm, data1=0) {
+        var data_new;
+        if(data1 == 0)
+        {
+            data_new = {{ data | safe }};
+        }
+        else
+        {
+            data_new = data1;
+        }
+        console.log(data_new);
+    var features = data_new['features'];
     console.log(features);
-    // }};
     var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
-    for(let i of features)
-    {
+    for (let i of features) {
         let lon = i["geometry"]['coordinates'][0];
         let lat = i["geometry"]['coordinates'][1];
-        console.log(lat);
-        console.log(lon);
+        // console.log(lat);
+        // console.log(lon);
         let title = i['properties']['name'];
-        let marker = L.marker([lat, lon],{icon:leaficon, title: title})
-        marker.addTo(map);
+        let marker1 = new L.marker([lat, lon], { icon: leaficon, title: title });
+        markers.push(marker1);
+        markers[markers.length-1].addTo(map);
+        // marker1.addTo(map);
         // console.log();
         slots_rem = i['properties']['availableSlots'];
         var pk = i['properties']['pk'];
         // console.log(typeof(pk));
-        var popup_content = "<p>Slots Remaining:"+slots_rem.toString()+"</p><button onclick='testfunc("+"\""+pk+"\""+")'>Book</button>";
+        var popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
         console.log(popup_content);
-        marker.bindPopup(popup_content);
+        markers[markers.length-1].bindPopup(popup_content);
+        // marker.setPopupContent(popup_content);
         // L.marker([lat, lon]).addTo(map);
     }
-    // var incidences = L.geoJson(null, {
-    //     pointToLayer: function (feature, latlng) {
-    //         return L.marker(latlng, {
-    //             icon: L.icon({ iconUrl: "static/img/red.png", 
-    //                             iconSize: [28, 32], 
-    //                             iconAnchor: [12, 28], 
-    //                             popupAnchor: [0, -25] }), 
-    //                             title: feature.properties.title,
-    //                             riseOnHover: true });
-    //     },
-    // }).addTo(map); 
-    // var incidencesUrl = 'incidences'; $.getJSON(incidencesUrl, function (data) { incidences.addData(data); });
     osm.addTo(map);
-    },
-    function (position) {
-        window.alert("Error Code" + position.code);
-        var map = L.map('demoMap', {
-            center: [19.0760, 72.8777],
-            zoom: 15,
-        });
+}
+    
+    socket.onmessage = function (e) {
+        // var data_recv = JSON.parse(e.)
+        console.log(e);
+        //data = e.
+        // map.remove();
+        // console.log(window.maps);
+        // var map1 = window.maps.leafletList[0].map;
+        // map1.remove();
+        var data_new = JSON.parse(e.data);
+        // var map = L.map('demoMap', {
+        //     center: [lat, lon],
+        //     zoom: 15,
+        // });
         var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
-
-        osm.addTo(map);
-    });
-    function testfunc(primary_key){
-        console.log("Book button pressed");
-        console.log(primary_key);
+        L.marker([lat, lon]).addTo(map);
+        for(i=0;i<markers.length;i++) {
+        map.removeLayer(markers[i]);
+        }  
+        // map.invalidateSize();
+        addMapIcons(map, osm, data_new);
+        // console.log(JSON.parse(e.data));
     }
 </script>
+<!-- <script>
+    let socket = new WebSocket("ws://localhost:8000/ws/tableData/");
+    var user_location;
+    function showMap()
+    {
+        
+    }
+    user_location = navigator.geolocation.getCurrentPosition(function (position) {
+        let lat = position.coords.latitude;
+        let lon = position.coords.longitude;
+        let obj1 = {'lat':lat,
+                    'lon':lon};
+        user_location = obj1;
+        console.log(lat);
+        console.log(lon);
+        // return obj1;
+    },
+    function (position) {
+            window.alert("Error Code" + position.code);
+            var map = L.map('demoMap', {
+                center: [19.0760, 72.8777],
+                zoom: 15,
+            });
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+
+            osm.addTo(map);
+        });
+    
+    console.log(user_location);
+//     function makebooking(primary_key) {
+//         // obj1 = {
+//         //     'id':primary_key,
+//         //     'no_of_slots':'1',
+//         //     'username':'{{username | safe}}'
+//         // }
+//         var data = primary_key + " " + "1 " + '{{username | safe}}'
+//         socket.send(data);
+//         // console.log(data);
+//     }
+//     var map = L.map('demoMap', {
+//             center: [lat, lon],
+//             zoom: 15,
+//         });
+//         var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+//         L.marker([lat, lon]).addTo(map);
+//         addMapIcons(map);
+//     function addMapIcons(map, data) {
+//         var data = {{ data | safe }};
+//     var features = data['features'];
+//     console.log(features);
+//     // }};
+
+//     var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
+//     for (let i of features) {
+//         let lon = i["geometry"]['coordinates'][0];
+//         let lat = i["geometry"]['coordinates'][1];
+//         console.log(lat);
+//         console.log(lon);
+//         let title = i['properties']['name'];
+//         let marker = L.marker([lat, lon], { icon: leaficon, title: title })
+//         marker.addTo(map);
+//         // console.log();
+//         slots_rem = i['properties']['availableSlots'];
+//         var pk = i['properties']['pk'];
+//         // console.log(typeof(pk));
+//         var popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
+//         console.log(popup_content);
+//         marker.bindPopup(popup_content);
+//         // L.marker([lat, lon]).addTo(map);
+//     }
+//     osm.addTo(map);
+// }
+//     socket.onmessage = function (e) {
+//         // var data_recv = JSON.parse(e.)
+//         console.log(e);
+//     }
+</script> -->
 
 </html>
 
