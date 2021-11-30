@@ -26,13 +26,12 @@ class TableData(AsyncWebsocketConsumer):
         id, noOfSlots, username = arr[0], int(arr[1]), arr[2]
         print(id)
         print(noOfSlots)
+        print("----",self.scope["user"],"----")
         id = uuid.UUID(id)
         
         warehouse = Warehouse.objects.get(warehouseId=id)
         if (warehouse.availableSlots >= noOfSlots):
             warehouse.availableSlots -= noOfSlots
-            
-            print(self.scope["user"])
             #user = User.objects.get(username=self.scope["user"])
             user = User.objects.get(username=username)
             BookedSlots.objects.create(warehouse=warehouse, user=user, bookingFees=warehouse.bookingFees)
