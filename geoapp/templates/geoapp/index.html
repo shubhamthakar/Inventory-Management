@@ -25,6 +25,10 @@
                 "<br>Longitude: " + position.coords.longitude;
         }
     </script> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 </head>
 
 <body>
@@ -81,20 +85,42 @@
         // }
         var data = primary_key + " " + "1 " + '{{username | safe}}'
         socket.send(data);
+        showRoutingInfo(primary_key);
         // console.log(data);
     }
 
-    function addMapIcons(map, osm, data1=0) {
+    function showRoutingInfo(primary_key) {
+        var back_data = {{data | safe}};
+        var features = back_data['features'];
+        var booked_warehouse;
+        for(let i of features)
+        {
+            if(i['properties']['pk'] === primary_key)
+            {
+                booked_warehouse = i;
+            }
+        }
+        var warehouse_lon = booked_warehouse["geometry"]['coordinates'][0];
+        var warehouse_lat = booked_warehouse["geometry"]['coordinates'][1];
+        L.Routing.control({
+            waypoints: [
+            L.latLng(lat, lon),
+            L.latLng(warehouse_lat, warehouse_lon)
+            ],
+            router: L.Routing.mapbox('pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg')
+        }).addTo(map);
+    }
+
+    function addMapIcons(map, osm, data1 = 0) {
         var data_new;
-        if(data1 == 0)
-        {
+        if (data1 == 0) {
             data_new = {{ data | safe }};
-        }
+    }
         else
-        {
-            data_new = data1;
-        }
-        console.log(data_new);
+    {
+        data_new = data1;
+    }
+    console.log(data_new);
     var features = data_new['features'];
     console.log(features);
     var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
@@ -106,21 +132,29 @@
         let title = i['properties']['name'];
         let marker1 = new L.marker([lat, lon], { icon: leaficon, title: title });
         markers.push(marker1);
-        markers[markers.length-1].addTo(map);
+        markers[markers.length - 1].addTo(map);
         // marker1.addTo(map);
         // console.log();
         slots_rem = i['properties']['availableSlots'];
+        var cost = i['properties']['bookingFees'];
         var pk = i['properties']['pk'];
         // console.log(typeof(pk));
-        var popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
+        var popup_content;
+        if (slots_rem == 0) {
+            popup_content = "<p>Warehouse is completely booked.</p><p><b>No slots remaining.</b></p>";
+        }
+        else {
+            popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><p>Slot Cost: " + cost.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
+        }
+
         console.log(popup_content);
-        markers[markers.length-1].bindPopup(popup_content);
+        markers[markers.length - 1].bindPopup(popup_content);
         // marker.setPopupContent(popup_content);
         // L.marker([lat, lon]).addTo(map);
     }
     osm.addTo(map);
 }
-    
+
     socket.onmessage = function (e) {
         // var data_recv = JSON.parse(e.)
         console.log(e);
@@ -136,12 +170,13 @@
         // });
         var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
         L.marker([lat, lon]).addTo(map);
-        for(i=0;i<markers.length;i++) {
-        map.removeLayer(markers[i]);
-        }  
+        for (i = 0; i < markers.length; i++) {
+            map.removeLayer(markers[i]);
+        }
         // map.invalidateSize();
         addMapIcons(map, osm, data_new);
         // console.log(JSON.parse(e.data));
+        //Mapbox Token : pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg
     }
 </script>
 <!-- <script>
