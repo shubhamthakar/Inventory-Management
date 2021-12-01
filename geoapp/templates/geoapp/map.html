@@ -84,7 +84,9 @@
         //     'no_of_slots':'1',
         //     'username':'{{username | safe}}'
         // }
-        var data = primary_key + " " + "1 " + '{{username | safe}}'
+        var inp = document.getElementById('slots_num').value.toString();
+        console.log(inp);
+        var data = primary_key + " " + inp + " " + '{{username | safe}}'
         socket.send(data);
         showRoutingInfo(primary_key);
 
@@ -152,7 +154,7 @@
             popup_content = "<p>Warehouse is completely booked.</p><p><b>No slots remaining.</b></p>";
         }
         else {
-            popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><p>Slot Cost: " + cost.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
+            popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><p>Slot Cost: " + cost.toString() + "</p><label for=\"slots_num\">Number of slots:</label><input type=\"number\" id=\"slots_num\" onKeyDown=\"return false\" min=\"1\" max=\""+slots_rem.toString()+"\"><br><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
         }
 
         console.log(popup_content);
