@@ -85,6 +85,11 @@
         //     'username':'{{username | safe}}'
         // }
         var inp = document.getElementById('slots_num').value.toString();
+        if(!inp)
+        {
+            window.alert("Enter number of slots to book.");
+            return;
+        }
         console.log(inp);
         var data = primary_key + " " + inp + " " + '{{username | safe}}'
         socket.send(data);
@@ -115,7 +120,8 @@
             L.latLng(lat, lon),
             L.latLng(warehouse_lat, warehouse_lon)
             ],
-            router: L.Routing.mapbox('pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg')
+            router: L.Routing.mapbox('pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg'),
+            createMarker: function() { return null; }
         });
         routes.push(new_route);
         routes[routes.length-1].addTo(map);
@@ -189,113 +195,4 @@
         //Mapbox Token : pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg
     }
 </script>
-<!-- <script>
-    let socket = new WebSocket("ws://localhost:8000/ws/tableData/");
-    var user_location;
-    function showMap()
-    {
-        
-    }
-    user_location = navigator.geolocation.getCurrentPosition(function (position) {
-        let lat = position.coords.latitude;
-        let lon = position.coords.longitude;
-        let obj1 = {'lat':lat,
-                    'lon':lon};
-        user_location = obj1;
-        console.log(lat);
-        console.log(lon);
-        // return obj1;
-    },
-    function (position) {
-            window.alert("Error Code" + position.code);
-            var map = L.map('demoMap', {
-                center: [19.0760, 72.8777],
-                zoom: 15,
-            });
-            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
-
-            osm.addTo(map);
-        });
-    
-    console.log(user_location);
-//     function makebooking(primary_key) {
-//         // obj1 = {
-//         //     'id':primary_key,
-//         //     'no_of_slots':'1',
-//         //     'username':'{{username | safe}}'
-//         // }
-//         var data = primary_key + " " + "1 " + '{{username | safe}}'
-//         socket.send(data);
-//         // console.log(data);
-//     }
-//     var map = L.map('demoMap', {
-//             center: [lat, lon],
-//             zoom: 15,
-//         });
-//         var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
-//         L.marker([lat, lon]).addTo(map);
-//         addMapIcons(map);
-//     function addMapIcons(map, data) {
-//         var data = {{ data | safe }};
-//     var features = data['features'];
-//     console.log(features);
-//     // }};
-
-//     var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
-//     for (let i of features) {
-//         let lon = i["geometry"]['coordinates'][0];
-//         let lat = i["geometry"]['coordinates'][1];
-//         console.log(lat);
-//         console.log(lon);
-//         let title = i['properties']['name'];
-//         let marker = L.marker([lat, lon], { icon: leaficon, title: title })
-//         marker.addTo(map);
-//         // console.log();
-//         slots_rem = i['properties']['availableSlots'];
-//         var pk = i['properties']['pk'];
-//         // console.log(typeof(pk));
-//         var popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
-//         console.log(popup_content);
-//         marker.bindPopup(popup_content);
-//         // L.marker([lat, lon]).addTo(map);
-//     }
-//     osm.addTo(map);
-// }
-//     socket.onmessage = function (e) {
-//         // var data_recv = JSON.parse(e.)
-//         console.log(e);
-//     }
-</script> -->
-
 </html>
-
-
-<!-- <!DOCTYPE html>
-<html>
-<body>
-
-<p>Click the button to get your coordinates.</p>
-
-<button onclick="getLocation()">Try It</button>
-
-<p id="demo"></p>
-
-<script>
-var x = document.getElementById("demo");
-
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
-
-function showPosition(position) {
-  x.innerHTML = "Latitude: " + position.coords.latitude + 
-  "<br>Longitude: " + position.coords.longitude;
-}
-</script>
-
-</body>
-</html> -->
