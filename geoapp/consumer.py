@@ -34,7 +34,7 @@ class TableData(AsyncWebsocketConsumer):
             warehouse.availableSlots -= noOfSlots
             #user = User.objects.get(username=self.scope["user"])
             user = User.objects.get(username=username)
-            BookedSlots.objects.create(warehouse=warehouse, user=user, bookingFees=warehouse.bookingFees)
+            BookedSlots.objects.create(warehouse=warehouse, user=user, bookingFees=warehouse.bookingFees, noOfSlots=noOfSlots)
             warehouse.save()
             data = Warehouse.objects.all()
             warehouse_details = serialize('geojson', data, geometry_field='location')
