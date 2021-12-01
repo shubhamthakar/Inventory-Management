@@ -46,14 +46,21 @@
     <!-- Navbar (sit on top) -->
     <div class="w3-top">
       <div class="w3-bar w3-white w3-card" id="myNavbar">
-        <a href="#home" class="w3-bar-item w3-button w3-wide">LOGO</a>
+        <a href="#" class="w3-bar-item w3-button w3-wide"
+          ><img
+            src="{% static 'img/logo1.png' %}"
+            alt="logo"
+            width="75"
+            height="75"
+        /></a>
+
         <!-- Right-sided navbar links -->
         <div class="w3-right w3-hide-small">
           <a href="#about" class="w3-bar-item w3-button">ABOUT</a>
           <a href="{% url 'SignInView'  %}" class="w3-bar-item w3-button"
             ><i class="fa fa-user"></i> Login</a
           >
-          <a href="#work" class="w3-bar-item w3-button"
+          <a href="{% url 'RegistrationView'  %}" class="w3-bar-item w3-button"
             ><i class="fa fa-th"></i> Register</a
           >
         </div>
@@ -92,17 +99,17 @@
       <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button"
         >ABOUT</a
       >
-      <a href="#team" onclick="w3_close()" class="w3-bar-item w3-button"
-        >TEAM</a
+      <a
+        href="{% url 'RegistrationView'  %}"
+        onclick="w3_close()"
+        class="w3-bar-item w3-button"
+        >Rgister</a
       >
-      <a href="#work" onclick="w3_close()" class="w3-bar-item w3-button"
-        >WORK</a
-      >
-      <a href="#pricing" onclick="w3_close()" class="w3-bar-item w3-button"
-        >PRICING</a
-      >
-      <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button"
-        >CONTACT</a
+      <a
+        href="{% url 'SignInView'  %}"
+        onclick="w3_close()"
+        class="w3-bar-item w3-button"
+        >Login</a
       >
     </nav>
 
@@ -118,7 +125,7 @@
         <span class="w3-large">Innovative Map Based Warehouse Booking</span>
         <p>
           <a
-            href="#about"
+            href="{% url 'map'  %}"
             class="
               w3-button
               w3-white
@@ -128,7 +135,7 @@
               w3-opacity
               w3-hover-opacity-off
             "
-            >Start
+            >Book a warehouse
           </a>
         </p>
       </div>
@@ -147,46 +154,47 @@
 
     <!-- About Section -->
     <div class="w3-container" style="padding: 128px 16px" id="about">
-      <h3 class="w3-center">ABOUT THE COMPANY</h3>
+      <h3 class="w3-center">ABOUT THE PRODUCT</h3>
       <p class="w3-center w3-large">Key features of our company</p>
       <div class="w3-row-padding w3-center" style="margin-top: 64px">
         <div class="w3-quarter">
-          <i class="fa fa-desktop w3-margin-bottom w3-jumbo w3-center"></i>
-          <p class="w3-large">Responsive</p>
+          <i class="fa fa-clock-o w3-margin-bottom w3-jumbo w3-center"></i>
+          <p class="w3-large">Realtime updates</p>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore.
+            Get realtime updates on availability of the warehouse slots directly
+            on your screen eliminating the need for refreshing the page to get
+            updates.
           </p>
         </div>
         <div class="w3-quarter">
-          <i class="fa fa-heart w3-margin-bottom w3-jumbo"></i>
-          <p class="w3-large">Passion</p>
+          <i class="fa fa-map w3-margin-bottom w3-jumbo"></i>
+          <p class="w3-large">Intuitive map based booking</p>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore.
+            Use our interactive map based booking system for a seemless
+            warehouse booking experience.
           </p>
         </div>
         <div class="w3-quarter">
-          <i class="fa fa-diamond w3-margin-bottom w3-jumbo"></i>
-          <p class="w3-large">Design</p>
+          <i class="fa fa-location-arrow w3-margin-bottom w3-jumbo"></i>
+          <p class="w3-large">Get routing information</p>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore.
+            Once you make a booking with us, we automatically detect your
+            location and suggest the fastest route to the booked warehouse,
+            saving your precious time.
           </p>
         </div>
         <div class="w3-quarter">
-          <i class="fa fa-cog w3-margin-bottom w3-jumbo"></i>
-          <p class="w3-large">Support</p>
+          <i class="fa fa-lock w3-margin-bottom w3-jumbo"></i>
+          <p class="w3-large">Secure payment facility</p>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore.
+            Use our secure payment interface to make safe and instant bookings.
           </p>
         </div>
       </div>
     </div>
 
     <!-- Promo Section - "We know design" -->
-    <div class="w3-container w3-light-grey" style="padding: 128px 16px">
+    <!-- <div class="w3-container w3-light-grey" style="padding: 128px 16px">
       <div class="w3-row-padding">
         <div class="w3-col m6">
           <h3>We know design.</h3>
@@ -210,10 +218,10 @@
           />
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Team Section -->
-    <div class="w3-container" style="padding: 128px 16px" id="team">
+    <!-- <div class="w3-container" style="padding: 128px 16px" id="team">
       <h3 class="w3-center">THE TEAM</h3>
       <p class="w3-center w3-large">The ones who runs this company</p>
       <div class="w3-row-padding w3-grayscale" style="margin-top: 64px">
@@ -290,10 +298,10 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Promo Section "Statistics" -->
-    <div class="w3-container w3-row w3-center w3-dark-grey w3-padding-64">
+    <!-- <div class="w3-container w3-row w3-center w3-dark-grey w3-padding-64">
       <div class="w3-quarter">
         <span class="w3-xxlarge">14+</span>
         <br />Partners
@@ -310,10 +318,10 @@
         <span class="w3-xxlarge">150+</span>
         <br />Meetings
       </div>
-    </div>
+    </div> -->
 
     <!-- Work Section -->
-    <div class="w3-container" style="padding: 128px 16px" id="work">
+    <!-- <div class="w3-container" style="padding: 128px 16px" id="work">
       <h3 class="w3-center">OUR WORK</h3>
       <p class="w3-center w3-large">What we've done for people</p>
 
@@ -394,10 +402,10 @@
           />
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Modal for full size images on click-->
-    <div
+    <!-- <div
       id="modal01"
       class="w3-modal w3-black"
       onclick="this.style.display='none'"
@@ -421,10 +429,10 @@
         <img id="img01" class="w3-image" />
         <p id="caption" class="w3-opacity w3-large"></p>
       </div>
-    </div>
+    </div> -->
 
     <!-- Skills Section -->
-    <div class="w3-container w3-light-grey w3-padding-64">
+    <!-- <div class="w3-container w3-light-grey w3-padding-64">
       <div class="w3-row-padding">
         <div class="w3-col m6">
           <h3>Our Skills.</h3>
@@ -466,10 +474,10 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Pricing Section -->
-    <div
+    <!-- <div
       class="w3-container w3-center w3-dark-grey"
       style="padding: 128px 16px"
       id="pricing"
@@ -532,10 +540,10 @@
           </ul>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Contact Section -->
-    <div
+    <!-- <div
       class="w3-container w3-light-grey"
       style="padding: 128px 16px"
       id="contact"
@@ -598,37 +606,33 @@
               <i class="fa fa-paper-plane"></i> SEND MESSAGE
             </button>
           </p>
-        </form>
-        <!-- Image of location/map -->
-        <img
+        </form> -->
+    <!-- Image of location/map -->
+    <!-- <img
           src="/w3images/map.jpg"
           class="w3-image w3-greyscale"
           style="width: 100%; margin-top: 48px"
         />
       </div>
-    </div>
+    </div> -->
 
     <!-- Footer -->
     <footer class="w3-center w3-black w3-padding-64">
       <a href="#home" class="w3-button w3-light-grey"
         ><i class="fa fa-arrow-up w3-margin-right"></i>To the top</a
       >
-      <div class="w3-xlarge w3-section">
+      <!-- <div class="w3-xlarge w3-section">
         <i class="fa fa-facebook-official w3-hover-opacity"></i>
         <i class="fa fa-instagram w3-hover-opacity"></i>
         <i class="fa fa-snapchat w3-hover-opacity"></i>
         <i class="fa fa-pinterest-p w3-hover-opacity"></i>
         <i class="fa fa-twitter w3-hover-opacity"></i>
         <i class="fa fa-linkedin w3-hover-opacity"></i>
-      </div>
+      </div> -->
       <p>
-        Powered by
-        <a
-          href="https://www.w3schools.com/w3css/default.asp"
-          title="W3.CSS"
-          target="_blank"
-          class="w3-hover-text-green"
-          >w3.css</a
+        Copyright
+        <a title="W3.CSS" target="_blank" class="w3-hover-text-green"
+          >Inventory Management System</a
         >
       </p>
     </footer>

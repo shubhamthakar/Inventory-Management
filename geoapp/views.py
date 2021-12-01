@@ -9,12 +9,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 import json
 import re
+from django.contrib.auth.decorators import login_required
 # https://www.youtube.com/watch?v=r6oTcAYDRt0
 # https://youtu.be/FKYZqAVyY8A
 # Create your views here.
 # def testPage(request):
 #     return render(request, 'geoapp/index.html', {})
-
+@login_required
 def map(request):
     channel_layer = get_channel_layer()
     data = Warehouse.objects.all()
