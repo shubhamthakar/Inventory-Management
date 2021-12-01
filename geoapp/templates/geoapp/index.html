@@ -43,6 +43,7 @@
     var lon;
     var map;
     var markers = new Array();
+    var routes = new Array();
     let socket = new WebSocket("ws://localhost:8000/ws/tableData/");
     navigator.geolocation.getCurrentPosition(function (position) {
         lat = position.coords.latitude;
@@ -86,10 +87,14 @@
         var data = primary_key + " " + "1 " + '{{username | safe}}'
         socket.send(data);
         showRoutingInfo(primary_key);
+
         // console.log(data);
     }
 
     function showRoutingInfo(primary_key) {
+        for (i = 0; i < routes.length; i++) {
+            map.removeControl(routes[i]);
+        }
         var back_data = {{data | safe}};
         var features = back_data['features'];
         var booked_warehouse;
@@ -102,13 +107,16 @@
         }
         var warehouse_lon = booked_warehouse["geometry"]['coordinates'][0];
         var warehouse_lat = booked_warehouse["geometry"]['coordinates'][1];
-        L.Routing.control({
+        var new_route;
+        new_route = L.Routing.control({
             waypoints: [
             L.latLng(lat, lon),
             L.latLng(warehouse_lat, warehouse_lon)
             ],
             router: L.Routing.mapbox('pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg')
-        }).addTo(map);
+        });
+        routes.push(new_route);
+        routes[routes.length-1].addTo(map);
     }
 
     function addMapIcons(map, osm, data1 = 0) {
