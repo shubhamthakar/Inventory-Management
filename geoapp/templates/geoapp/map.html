@@ -121,7 +121,8 @@
             L.latLng(warehouse_lat, warehouse_lon)
             ],
             router: L.Routing.mapbox('pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg'),
-            createMarker: function() { return null; }
+            createMarker: function() { return null; },
+            fitSelectedRoutes: false
         });
         routes.push(new_route);
         routes[routes.length-1].addTo(map);
@@ -154,13 +155,17 @@
         slots_rem = i['properties']['availableSlots'];
         var cost = i['properties']['bookingFees'];
         var pk = i['properties']['pk'];
+        var war_name = i['properties']['name'];
         // console.log(typeof(pk));
         var popup_content;
+        var button_style_str = 'box-shadow:inset 0px 1px 0px 0px #f9eca0;background:linear-gradient(to bottom, #f0c911 5%, #f2ab1e 100%);background-color:#f0c911;border-radius:6px;border:1px solid #e65f44;display:inline-block;cursor:pointer;color:#c92200;font-family:Arial;font-size:15px;font-weight:bold;padding:6px 24px;text-decoration:none;text-shadow:0px 1px 0px #ded17c;';
+
+        console.log(button_style_str);
         if (slots_rem == 0) {
             popup_content = "<p>Warehouse is completely booked.</p><p><b>No slots remaining.</b></p>";
         }
         else {
-            popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><p>Slot Cost: " + cost.toString() + "</p><label for=\"slots_num\">Number of slots:</label><input type=\"number\" id=\"slots_num\" onKeyDown=\"return false\" min=\"1\" max=\""+slots_rem.toString()+"\"><br><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
+            popup_content = "<div style=\"text-align:center\"><p style=\"font-size:larger;\"><b>"+war_name+"</b></p><p><b>Slots Remaining:</b>" + slots_rem.toString() + "</p><p><b>Slot Cost:</b> " + cost.toString() + " Rs. </p><label for=\"slots_num\"><b>Number of slots:</b></label><input type=\"number\" id=\"slots_num\" onKeyDown=\"return false\" min=\"1\" max=\""+slots_rem.toString()+"\"><br><br><button style=\""+button_style_str+"\" onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button></div>";
         }
 
         console.log(popup_content);
