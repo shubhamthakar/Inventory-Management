@@ -1,0 +1,299 @@
+{% load leaflet_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Warehouse</title>
+    {% leaflet_js %}
+    {% leaflet_css %}
+    <!-- <script>
+        var x = document.getElementById("demo");
+        function getLocation() {
+            console.log("Called");
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            x.innerHTML = "Latitude: " + position.coords.latitude +
+                "<br>Longitude: " + position.coords.longitude;
+        }
+    </script> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+</head>
+
+<body>
+    <div id="demoMap" style="width:100%;height:600px;"></div>
+</body>
+<script>
+    // var lat = navigator.geolocation.getCurrentPosition.coords.latitude;
+    // var lon = navigator.geolocation.getCurrentPosition.coords.longitude;
+    // console.log(lat);
+    // console.log(lon);
+    var lat;
+    var lon;
+    var map;
+    var markers = new Array();
+    var routes = new Array();
+    let socket = new WebSocket("ws://localhost:8000/ws/tableData/");
+    navigator.geolocation.getCurrentPosition(function (position) {
+        lat = position.coords.latitude;
+        lon = position.coords.longitude;
+        map = L.map('demoMap', {
+            center: [lat, lon],
+            zoom: 15,
+        });
+        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+        L.marker([lat, lon]).addTo(map);
+        addMapIcons(map, osm);
+        // var incidences = L.geoJson(null, {
+        //     pointToLayer: function (feature, latlng) {
+        //         return L.marker(latlng, {
+        //             icon: L.icon({ iconUrl: "static/img/red.png", 
+        //                             iconSize: [28, 32], 
+        //                             iconAnchor: [12, 28], 
+        //                             popupAnchor: [0, -25] }), 
+        //                             title: feature.properties.title,
+        //                             riseOnHover: true });
+        //     },
+        // }).addTo(map); 
+        // var incidencesUrl = 'incidences'; $.getJSON(incidencesUrl, function (data) { incidences.addData(data); });
+    },
+        function (position) {
+            window.alert("Error Code" + position.code);
+            var map = L.map('demoMap', {
+                center: [19.0760, 72.8777],
+                zoom: 15,
+            });
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+
+            osm.addTo(map);
+        });
+    function makebooking(primary_key) {
+        // obj1 = {
+        //     'id':primary_key,
+        //     'no_of_slots':'1',
+        //     'username':'{{username | safe}}'
+        // }
+        var data = primary_key + " " + "1 " + '{{username | safe}}'
+        socket.send(data);
+        showRoutingInfo(primary_key);
+
+        // console.log(data);
+    }
+
+    function showRoutingInfo(primary_key) {
+        for (i = 0; i < routes.length; i++) {
+            map.removeControl(routes[i]);
+        }
+        var back_data = {{data | safe}};
+        var features = back_data['features'];
+        var booked_warehouse;
+        for(let i of features)
+        {
+            if(i['properties']['pk'] === primary_key)
+            {
+                booked_warehouse = i;
+            }
+        }
+        var warehouse_lon = booked_warehouse["geometry"]['coordinates'][0];
+        var warehouse_lat = booked_warehouse["geometry"]['coordinates'][1];
+        var new_route;
+        new_route = L.Routing.control({
+            waypoints: [
+            L.latLng(lat, lon),
+            L.latLng(warehouse_lat, warehouse_lon)
+            ],
+            router: L.Routing.mapbox('pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg')
+        });
+        routes.push(new_route);
+        routes[routes.length-1].addTo(map);
+    }
+
+    function addMapIcons(map, osm, data1 = 0) {
+        var data_new;
+        if (data1 == 0) {
+            data_new = {{ data | safe }};
+    }
+        else
+    {
+        data_new = data1;
+    }
+    console.log(data_new);
+    var features = data_new['features'];
+    console.log(features);
+    var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
+    for (let i of features) {
+        let lon = i["geometry"]['coordinates'][0];
+        let lat = i["geometry"]['coordinates'][1];
+        // console.log(lat);
+        // console.log(lon);
+        let title = i['properties']['name'];
+        let marker1 = new L.marker([lat, lon], { icon: leaficon, title: title });
+        markers.push(marker1);
+        markers[markers.length - 1].addTo(map);
+        // marker1.addTo(map);
+        // console.log();
+        slots_rem = i['properties']['availableSlots'];
+        var cost = i['properties']['bookingFees'];
+        var pk = i['properties']['pk'];
+        // console.log(typeof(pk));
+        var popup_content;
+        if (slots_rem == 0) {
+            popup_content = "<p>Warehouse is completely booked.</p><p><b>No slots remaining.</b></p>";
+        }
+        else {
+            popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><p>Slot Cost: " + cost.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
+        }
+
+        console.log(popup_content);
+        markers[markers.length - 1].bindPopup(popup_content);
+        // marker.setPopupContent(popup_content);
+        // L.marker([lat, lon]).addTo(map);
+    }
+    osm.addTo(map);
+}
+
+    socket.onmessage = function (e) {
+        // var data_recv = JSON.parse(e.)
+        console.log(e);
+        //data = e.
+        // map.remove();
+        // console.log(window.maps);
+        // var map1 = window.maps.leafletList[0].map;
+        // map1.remove();
+        var data_new = JSON.parse(e.data);
+        // var map = L.map('demoMap', {
+        //     center: [lat, lon],
+        //     zoom: 15,
+        // });
+        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+        L.marker([lat, lon]).addTo(map);
+        for (i = 0; i < markers.length; i++) {
+            map.removeLayer(markers[i]);
+        }
+        // map.invalidateSize();
+        addMapIcons(map, osm, data_new);
+        // console.log(JSON.parse(e.data));
+        //Mapbox Token : pk.eyJ1IjoidmVkYW50aHJhamEiLCJhIjoiY2tsbWsycHM0MDlzZTJvbXhrcHJwbTFrNSJ9.bRTuVraEk8w_Gq30sZ3yzg
+    }
+</script>
+<!-- <script>
+    let socket = new WebSocket("ws://localhost:8000/ws/tableData/");
+    var user_location;
+    function showMap()
+    {
+        
+    }
+    user_location = navigator.geolocation.getCurrentPosition(function (position) {
+        let lat = position.coords.latitude;
+        let lon = position.coords.longitude;
+        let obj1 = {'lat':lat,
+                    'lon':lon};
+        user_location = obj1;
+        console.log(lat);
+        console.log(lon);
+        // return obj1;
+    },
+    function (position) {
+            window.alert("Error Code" + position.code);
+            var map = L.map('demoMap', {
+                center: [19.0760, 72.8777],
+                zoom: 15,
+            });
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+
+            osm.addTo(map);
+        });
+    
+    console.log(user_location);
+//     function makebooking(primary_key) {
+//         // obj1 = {
+//         //     'id':primary_key,
+//         //     'no_of_slots':'1',
+//         //     'username':'{{username | safe}}'
+//         // }
+//         var data = primary_key + " " + "1 " + '{{username | safe}}'
+//         socket.send(data);
+//         // console.log(data);
+//     }
+//     var map = L.map('demoMap', {
+//             center: [lat, lon],
+//             zoom: 15,
+//         });
+//         var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+//         L.marker([lat, lon]).addTo(map);
+//         addMapIcons(map);
+//     function addMapIcons(map, data) {
+//         var data = {{ data | safe }};
+//     var features = data['features'];
+//     console.log(features);
+//     // }};
+
+//     var leaficon = L.icon({ iconUrl: "../../static/img/red.png", iconSize: [28, 32], iconAnchor: [12, 28], popupAnchor: [0, -25] });
+//     for (let i of features) {
+//         let lon = i["geometry"]['coordinates'][0];
+//         let lat = i["geometry"]['coordinates'][1];
+//         console.log(lat);
+//         console.log(lon);
+//         let title = i['properties']['name'];
+//         let marker = L.marker([lat, lon], { icon: leaficon, title: title })
+//         marker.addTo(map);
+//         // console.log();
+//         slots_rem = i['properties']['availableSlots'];
+//         var pk = i['properties']['pk'];
+//         // console.log(typeof(pk));
+//         var popup_content = "<p>Slots Remaining:" + slots_rem.toString() + "</p><button onclick='makebooking(" + "\"" + pk + "\"" + ")'>Book</button>";
+//         console.log(popup_content);
+//         marker.bindPopup(popup_content);
+//         // L.marker([lat, lon]).addTo(map);
+//     }
+//     osm.addTo(map);
+// }
+//     socket.onmessage = function (e) {
+//         // var data_recv = JSON.parse(e.)
+//         console.log(e);
+//     }
+</script> -->
+
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html>
+<body>
+
+<p>Click the button to get your coordinates.</p>
+
+<button onclick="getLocation()">Try It</button>
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("demo");
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude + 
+  "<br>Longitude: " + position.coords.longitude;
+}
+</script>
+
+</body>
+</html> -->

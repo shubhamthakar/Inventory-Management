@@ -15,7 +15,7 @@ import re
 # def testPage(request):
 #     return render(request, 'geoapp/index.html', {})
 
-def index(request):
+def map(request):
     channel_layer = get_channel_layer()
     data = Warehouse.objects.all()
     data = serialize('geojson', data, geometry_field='location')
@@ -30,9 +30,11 @@ def index(request):
         }
     )
     cont = {'data':data,'username':request.user.username}
-    return render(request,'geoapp/index.html', cont)
+    return render(request,'geoapp/map.html', cont)
 
 
+def index(request):
+    return render(request, 'geoapp/index.html')
 
 class SignInView(View):
     def get(self,request):
